@@ -22,8 +22,13 @@ function TalentAdd() {
   const { currentUser } = cookies;
   const navigate = useNavigate();
   const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
+  const [birthday, setBirthday] = useState("");
+  const [debut, setDebut] = useState("");
+  const [height, setHeight] = useState("");
   const [category, setCategory] = useState("");
+  const [illustrator, setIllustrator] = useState("");
+  const [dream, setDream] = useState("");
+  const [fanName, setFanName] = useState("");
   const [image, setImage] = useState("");
   const [uploading, setUploading] = useState(false);
 
@@ -57,8 +62,13 @@ function TalentAdd() {
     createMutation.mutate({
       data: JSON.stringify({
         name: name,
-        description: description,
+        birthday: birthday,
+        debut: debut,
+        height: height,
         category: category,
+        illustrator: illustrator,
+        dream: dream,
+        fanName: fanName,
         image: image,
       }),
       token: currentUser ? currentUser.token : "",
@@ -126,12 +136,34 @@ function TalentAdd() {
         <Divider />
         <Space h="20px" />
         <TextInput
-          value={description}
-          placeholder="Enter the talent description here"
-          label="Description"
-          description="The description of the talent"
+          value={birthday}
+          placeholder="Enter the talent birthday here"
+          label="Birthday"
+          description="The birthday of the talent"
           withAsterisk
-          onChange={(event) => setDescription(event.target.value)}
+          onChange={(event) => setBirthday(event.target.value)}
+        />
+        <Space h="20px" />
+        <Divider />
+        <Space h="20px" />
+        <TextInput
+          value={debut}
+          placeholder="Enter the talent debut here"
+          label="Debut"
+          description="The debut of the talent"
+          withAsterisk
+          onChange={(event) => setDebut(event.target.value)}
+        />
+        <Space h="20px" />
+        <Divider />
+        <Space h="20px" />
+        <TextInput
+          value={height}
+          placeholder="Enter the talent height here"
+          label="Height"
+          description="The height of the talent"
+          withAsterisk
+          onChange={(event) => setHeight(event.target.value)}
         />
         <Space h="20px" />
         <Divider />
@@ -143,6 +175,39 @@ function TalentAdd() {
           description="The category of the talent"
           withAsterisk
           onChange={(event) => setCategory(event.target.value)}
+        />
+        <Space h="20px" />
+        <Divider />
+        <Space h="20px" />
+        <TextInput
+          value={illustrator}
+          placeholder="Enter the talent illustrator here"
+          label="Illustrator"
+          description="The illustrator of the talent"
+          withAsterisk
+          onChange={(event) => setIllustrator(event.target.value)}
+        />
+        <Space h="20px" />
+        <Divider />
+        <Space h="20px" />
+        <TextInput
+          value={dream}
+          placeholder="Enter the talent dream here"
+          label="Dream"
+          description="The dream of the talent"
+          withAsterisk
+          onChange={(event) => setDream(event.target.value)}
+        />
+        <Space h="20px" />
+        <Divider />
+        <Space h="20px" />
+        <TextInput
+          value={fanName}
+          placeholder="Enter the talent Fan Name here"
+          label="Fan Name"
+          description="The Fan Name of the talent"
+          withAsterisk
+          onChange={(event) => setFanName(event.target.value)}
         />
         <Space h="20px" />
         {isAdmin ? (

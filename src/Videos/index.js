@@ -7,6 +7,7 @@ import {
   Space,
   Button,
   Container,
+  Menu,
 } from "@mantine/core";
 import { Link } from "react-router-dom";
 import { useState, useMemo, useEffect } from "react";
@@ -15,6 +16,8 @@ import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { fetchVideos, deleteVideo } from "../api/videos";
 import { useCookies } from "react-cookie";
 import Header from "../Header";
+import { LuSettings2 } from "react-icons/lu";
+import { BsPencilSquare, BsTrash } from "react-icons/bs";
 
 function Videos() {
   const [cookies] = useCookies(["currentUser"]);
@@ -26,8 +29,8 @@ function Videos() {
   const [perPage, setPerPage] = useState(6);
   const [totalPages, setTotalPages] = useState([]);
   const { data: videos } = useQuery({
-    queryKey: ["videos", category],
-    queryFn: () => fetchVideos(category),
+    queryKey: ["videos"],
+    queryFn: () => fetchVideos(),
   });
 
   const isAdmin = useMemo(() => {
@@ -60,7 +63,7 @@ function Videos() {
     setCurrentVideos(newList);
   }, [videos, category, perPage, currentPage]);
 
-  const memoryVideos = queryClient.getQueryData(["videos", ""]);
+  const memoryVideos = queryClient.getQueryData(["videos"]);
   const categoryOptions = useMemo(() => {
     let options = [];
 
@@ -104,34 +107,25 @@ function Videos() {
         </Group>
         <Space h="20px" />
         <Group>
-          <select
-            value={category}
-            onChange={(event) => {
-              setCategory(event.target.value);
-              setCurrentPage(1);
+          <Button
+            onClick={() => {
+              setCategory("");
             }}
           >
-            <option value="">All category</option>
-            {categoryOptions.map((category) => {
-              return (
-                <option key={category} value={category}>
-                  {category}
-                </option>
-              );
-            })}
-          </select>
-          <select
-            value={perPage}
-            onChange={(event) => {
-              setPerPage(parseInt(event.target.value));
-              // reset it back to page 1
-              setCurrentPage(1);
-            }}
-          >
-            <option value="6">6 Per Page</option>
-            <option value="10">10 Per Page</option>
-            <option value={9999999}>All</option>
-          </select>
+            All
+          </Button>
+          {categoryOptions.map((category) => {
+            return (
+              <Button
+                key={category}
+                onClick={() => {
+                  setCategory(category);
+                }}
+              >
+                {category}
+              </Button>
+            );
+          })}
         </Group>
         <Space h="30px" />
         <Grid>
@@ -140,11 +134,46 @@ function Videos() {
                 return (
                   <Grid.Col key={video._id} lg={4} sm={6} xs={12}>
                     <Card withBorder shadow="sm" p="20px">
+                      {isAdmin && (
+                        <>
+                          <Menu shadow="md" width={200} position="bottom-end">
+                            <Menu.Target>
+                              <Group position="right">
+                                <Button>
+                                  <LuSettings2 />
+                                </Button>
+                              </Group>
+                            </Menu.Target>
+
+                            <Menu.Dropdown>
+                              <Menu.Item
+                                component={Link}
+                                to={"/edit_videos/" + video._id}
+                                icon={<BsPencilSquare />}
+                              >
+                                Edit
+                              </Menu.Item>
+                              <Menu.Item
+                                color="red"
+                                onClick={() => {
+                                  deleteMutation.mutate({
+                                    id: video._id,
+                                    token: currentUser ? currentUser.token : "",
+                                  });
+                                }}
+                                icon={<BsTrash />}
+                              >
+                                Delete
+                              </Menu.Item>
+                            </Menu.Dropdown>
+                          </Menu>
+                        </>
+                      )}
                       <Space h="20px" />
                       <a href={video.link} target="_blank">
                         <img
                           src={"http://localhost:5000/" + video.image}
-                          width="400px"
+                          height="100vh"
                         />
                       </a>
                       <Space h="20px" />
@@ -154,36 +183,6 @@ function Videos() {
                         <Badge color="yellow">{video.category}</Badge>
                       </Group>
                       <Space h="20px" />
-                      {isAdmin && (
-                        <>
-                          <Space h="20px" />
-                          <Group position="apart">
-                            <Button
-                              component={Link}
-                              to={"/edit_videos/" + video._id}
-                              color="blue"
-                              size="xs"
-                              radius="50px"
-                            >
-                              Edit
-                            </Button>
-
-                            <Button
-                              color="red"
-                              size="xs"
-                              radius="50px"
-                              onClick={() => {
-                                deleteMutation.mutate({
-                                  id: video._id,
-                                  token: currentUser ? currentUser.token : "",
-                                });
-                              }}
-                            >
-                              Delete
-                            </Button>
-                          </Group>
-                        </>
-                      )}
                     </Card>
                   </Grid.Col>
                 );

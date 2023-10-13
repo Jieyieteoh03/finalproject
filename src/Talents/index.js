@@ -7,20 +7,24 @@ import {
   Space,
   Button,
   Container,
+  Menu,
 } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
 import { Link } from "react-router-dom";
 import { useState, useMemo, useEffect } from "react";
 import { notifications } from "@mantine/notifications";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { fetchTalents, deleteTalent } from "../api/talents";
-// import { addToCart, getCartItems } from "../api/cart";
 import { useCookies } from "react-cookie";
 import Header from "../Header";
+import { LuSettings2 } from "react-icons/lu";
+import { BsPencilSquare, BsTrash } from "react-icons/bs";
 
 function Talents() {
   const [cookies] = useCookies(["currentUser"]);
   const { currentUser } = cookies;
   const queryClient = useQueryClient();
+  const [opened, { toggle }] = useDisclosure(false);
   const [currentTalents, setCurrentTalents] = useState([]);
   const [category, setCategory] = useState("");
   const [sort, setSort] = useState("");
@@ -31,11 +35,6 @@ function Talents() {
     queryKey: ["talents", category],
     queryFn: () => fetchTalents(category),
   });
-
-  //   const { data: cart = [] } = useQuery({
-  //     queryKey: ["cart"],
-  //     queryFn: getCartItems,
-  //   });
 
   const isAdmin = useMemo(() => {
     return cookies &&
@@ -111,34 +110,25 @@ function Talents() {
         )}
         <Space h="20px" />
         <Group>
-          <select
-            value={category}
-            onChange={(event) => {
-              setCategory(event.target.value);
-              setCurrentPage(1);
+          <Button
+            onClick={() => {
+              setCategory("");
             }}
           >
-            <option value="">All category</option>
-            {categoryOptions.map((category) => {
-              return (
-                <option key={category} value={category}>
-                  {category}
-                </option>
-              );
-            })}
-          </select>
-          <select
-            value={perPage}
-            onChange={(event) => {
-              setPerPage(parseInt(event.target.value));
-              // reset it back to page 1
-              setCurrentPage(1);
-            }}
-          >
-            <option value="6">6 Per Page</option>
-            <option value="10">10 Per Page</option>
-            <option value={9999999}>All</option>
-          </select>
+            All
+          </Button>
+          {categoryOptions.map((category) => {
+            return (
+              <Button
+                key={category}
+                onClick={() => {
+                  setCategory(category);
+                }}
+              >
+                {category}
+              </Button>
+            );
+          })}
         </Group>
         <Space h="30px" />
         <Grid>
@@ -148,48 +138,54 @@ function Talents() {
                   <Grid.Col key={talent._id} lg={4} sm={6} xs={12}>
                     <Card withBorder shadow="sm" p="20px">
                       <Title order={5}>{talent.title}</Title>
-                      <Space h="20px" />
-                      <img src={"http://localhost:5000/" + talent.image} />
-                      <Space h="20px" />
-                      <Group position="apart">
-                        <Badge color="yellow">{talent.category}</Badge>
-                        <Badge color="yellow">{talent.name}</Badge>
-                      </Group>
-                      <Space h="20px" />
                       {isAdmin && (
                         <>
-                          <Space h="20px" />
-                          <Group position="apart">
-                            <Button
-                              component={Link}
-                              to={"/edit_talents/" + talent._id}
-                              color="blue"
-                              size="xs"
-                              radius="50px"
-                            >
-                              Edit
-                            </Button>
+                          <Menu shadow="md" width={200} position="bottom-end">
+                            <Menu.Target>
+                              <Group position="right">
+                                <Button>
+                                  <LuSettings2 />
+                                </Button>
+                              </Group>
+                            </Menu.Target>
 
-                            <Button
-                              color="red"
-                              size="xs"
-                              radius="50px"
-                              onClick={() => {
-                                deleteMutation.mutate({
-                                  id: talent._id,
-                                  token: currentUser ? currentUser.token : "",
-                                });
-                              }}
-                            >
-                              Delete
-                            </Button>
-                          </Group>
+                            <Menu.Dropdown>
+                              <Menu.Item
+                                component={Link}
+                                to={"/edit_talents/" + talent._id}
+                                icon={<BsPencilSquare />}
+                              >
+                                Edit
+                              </Menu.Item>
+                              <Menu.Item
+                                color="red"
+                                onClick={() => {
+                                  deleteMutation.mutate({
+                                    id: talent._id,
+                                    token: currentUser ? currentUser.token : "",
+                                  });
+                                }}
+                                icon={<BsTrash />}
+                              >
+                                Delete
+                              </Menu.Item>
+                            </Menu.Dropdown>
+                          </Menu>
                         </>
                       )}
                       <Space h="20px" />
+                      <img
+                        src={"http://localhost:5000/" + talent.image}
+                        height="100vh"
+                      />
+                      <Space h="20px" />
+                      <Title order={4}>{talent.name}</Title>
+                      <Space h="20px" />
+                      <Badge color="yellow">{talent.category}</Badge>
+                      <Space h="20px" />
                       <Button
                         component={Link}
-                        to="/details/:id"
+                        to={"/details/" + talent._id}
                         color="red"
                         size="xs"
                         radius="50px"
@@ -227,3 +223,32 @@ function Talents() {
 }
 
 export default Talents;
+
+{
+  /* <Button
+                                      component={Link}
+                                      to={"/edit_talents/" + talent._id}
+                                      color="blue"
+                                      size="xs"
+                                      radius="50px"
+                                    >
+                                      Edit
+                                    </Button>
+                                  </Grid.Col>
+                                  <Grid.Col>
+                                    <Button
+                                      color="red"
+                                      size="xs"
+                                      radius="50px"
+                                      onClick={() => {
+                                        deleteMutation.mutate({
+                                          id: talent._id,
+                                          token: currentUser
+                                            ? currentUser.token
+                                            : "",
+                                        });
+                                      }}
+                                    >
+                                      Delete
+                                    </Button> */
+}

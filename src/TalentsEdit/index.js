@@ -14,12 +14,7 @@ import { Dropzone, DropzoneProps, IMAGE_MIME_TYPE } from "@mantine/dropzone";
 import { notifications } from "@mantine/notifications";
 import { useState, useMemo } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import {
-  getTalent,
-  updateTalent,
-  addTalentImage,
-  uploadTalentImage,
-} from "../api/talents";
+import { getTalent, updateTalent, uploadTalentImage } from "../api/talents";
 import { useCookies } from "react-cookie";
 
 function TalentsEdit() {
@@ -28,8 +23,13 @@ function TalentsEdit() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [name, setName] = useState("");
-  const [desc, setDesc] = useState("");
+  const [birthday, setBirthday] = useState("");
+  const [debut, setDebut] = useState("");
+  const [height, setHeight] = useState("");
   const [category, setCategory] = useState("");
+  const [illustrator, setIllustrator] = useState("");
+  const [dream, setDream] = useState("");
+  const [fanName, setFanName] = useState("");
   const [image, setImage] = useState("");
   const [uploading, setUploading] = useState("");
   const { isLoading } = useQuery({
@@ -37,8 +37,13 @@ function TalentsEdit() {
     queryFn: () => getTalent(id),
     onSuccess: (data) => {
       setName(data.name);
-      setDesc(data.desc);
+      setBirthday(data.birthday);
+      setDebut(data.debut);
+      setHeight(data.height);
       setCategory(data.category);
+      setIllustrator(data.illustrator);
+      setDream(data.dream);
+      setFanName(data.fanName);
       setImage(data.image);
     },
   });
@@ -75,8 +80,13 @@ function TalentsEdit() {
       id: id,
       data: JSON.stringify({
         name: name,
-        desc: desc,
+        birthday: birthday,
+        debut: debut,
+        height: height,
         category: category,
+        illustrator: illustrator,
+        dream: dream,
+        fanName: fanName,
         image: image,
       }),
       token: currentUser ? currentUser.token : "",
@@ -105,7 +115,7 @@ function TalentsEdit() {
     <Container>
       <Space h="50px" />
       <Title order={2} align="center">
-        Edit talent
+        Add New Talent
       </Title>
       <Space h="50px" />
       <Card withBorder shadow="md" p="20px">
@@ -123,7 +133,7 @@ function TalentsEdit() {
         {image && image !== "" ? (
           <>
             <Image src={"http://localhost:5000/" + image} width="100%" />
-            <Button color="dark" mt="15 px" onClick={() => setImage("")}>
+            <Button color="dark" mt="15px" onClick={() => setImage("")}>
               Remove Image
             </Button>
           </>
@@ -144,6 +154,39 @@ function TalentsEdit() {
         <Divider />
         <Space h="20px" />
         <TextInput
+          value={birthday}
+          placeholder="Enter the talent birthday here"
+          label="Birthday"
+          description="The birthday of the talent"
+          withAsterisk
+          onChange={(event) => setBirthday(event.target.value)}
+        />
+        <Space h="20px" />
+        <Divider />
+        <Space h="20px" />
+        <TextInput
+          value={debut}
+          placeholder="Enter the talent debut here"
+          label="Debut"
+          description="The debut of the talent"
+          withAsterisk
+          onChange={(event) => setDebut(event.target.value)}
+        />
+        <Space h="20px" />
+        <Divider />
+        <Space h="20px" />
+        <TextInput
+          value={height}
+          placeholder="Enter the talent height here"
+          label="Height"
+          description="The height of the talent"
+          withAsterisk
+          onChange={(event) => setHeight(event.target.value)}
+        />
+        <Space h="20px" />
+        <Divider />
+        <Space h="20px" />
+        <TextInput
           value={category}
           placeholder="Enter the category here"
           label="Category"
@@ -152,11 +195,44 @@ function TalentsEdit() {
           onChange={(event) => setCategory(event.target.value)}
         />
         <Space h="20px" />
-        {isAdmin && (
+        <Divider />
+        <Space h="20px" />
+        <TextInput
+          value={illustrator}
+          placeholder="Enter the talent illustrator here"
+          label="Illustrator"
+          description="The illustrator of the talent"
+          withAsterisk
+          onChange={(event) => setIllustrator(event.target.value)}
+        />
+        <Space h="20px" />
+        <Divider />
+        <Space h="20px" />
+        <TextInput
+          value={dream}
+          placeholder="Enter the talent dream here"
+          label="Dream"
+          description="The dream of the talent"
+          withAsterisk
+          onChange={(event) => setDream(event.target.value)}
+        />
+        <Space h="20px" />
+        <Divider />
+        <Space h="20px" />
+        <TextInput
+          value={fanName}
+          placeholder="Enter the talent Fan Name here"
+          label="Fan Name"
+          description="The Fan Name of the talent"
+          withAsterisk
+          onChange={(event) => setFanName(event.target.value)}
+        />
+        <Space h="20px" />
+        {isAdmin ? (
           <Button fullWidth onClick={handleUpdateTalent}>
             Update
           </Button>
-        )}
+        ) : null}
       </Card>
       <Space h="20px" />
       <Group position="center">
@@ -167,7 +243,7 @@ function TalentsEdit() {
           size="xs"
           color="gray"
         >
-          Go back to Talents
+          Go back to Talent
         </Button>
       </Group>
       <Space h="100px" />

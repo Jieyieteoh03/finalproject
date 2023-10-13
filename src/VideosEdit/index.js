@@ -15,6 +15,7 @@ import { notifications } from "@mantine/notifications";
 import { useState, useMemo } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { getVideo, updateVideo, uploadVideoImage } from "../api/videos";
+import { fetchTalents } from "../api/talents";
 import { useCookies } from "react-cookie";
 
 function VideosEdit() {
@@ -26,8 +27,9 @@ function VideosEdit() {
   const [link, setLink] = useState("");
   const [category, setCategory] = useState("");
   const [image, setImage] = useState("");
+  const [talent, setTalent] = useState("");
   const [uploading, setUploading] = useState("");
-  const { isLoading } = useQuery({
+  const {} = useQuery({
     queryKey: ["videos", id],
     queryFn: () => getVideo(id),
     onSuccess: (data) => {
@@ -36,6 +38,11 @@ function VideosEdit() {
       setCategory(data.category);
       setImage(data.image);
     },
+  });
+
+  const { data: talents = [] } = useQuery({
+    queryKey: ["talents"],
+    queryFn: () => fetchTalents(),
   });
 
   const isAdmin = useMemo(() => {
@@ -157,6 +164,22 @@ function VideosEdit() {
           withAsterisk
           onChange={(event) => setCategory(event.target.value)}
         />
+        <Space h="20px" />
+        <select
+          value={talent}
+          onChange={(event) => {
+            setTalent(event.target.value);
+          }}
+        >
+          <option value="">Select a talent</option>
+          {talents.map((t) => {
+            return (
+              <option key={t._id} value={t._id}>
+                {t.name}
+              </option>
+            );
+          })}
+        </select>
         <Space h="20px" />
         {isAdmin && (
           <Button fullWidth onClick={handleUpdateVideo}>

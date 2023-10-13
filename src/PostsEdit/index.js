@@ -1,5 +1,3 @@
-import { useState, useMemo } from "react";
-import { useCookies } from "react-cookie";
 import {
   Container,
   Title,
@@ -11,44 +9,51 @@ import {
   Group,
   Image,
 } from "@mantine/core";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { Dropzone, DropzoneProps, IMAGE_MIME_TYPE } from "@mantine/dropzone";
 import { notifications } from "@mantine/notifications";
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
-import { addVideos, addVideoImage } from "../api/videos";
+import { useState, useMemo } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchTalents } from "../api/talents";
+import { getPost, updatePost, uploadPostImage } from "../api/posts";
+import { useCookies } from "react-cookie";
 
-function VideosAdd() {
+function PostsEdit() {
   const [cookies] = useCookies(["currentUser"]);
   const { currentUser } = cookies;
+  const { id } = useParams();
   const navigate = useNavigate();
   const [name, setName] = useState("");
-  const [link, setLink] = useState("");
+  const [desc, setDesc] = useState("");
   const [category, setCategory] = useState("");
   const [image, setImage] = useState("");
   const [talent, setTalent] = useState("");
-  const [uploading, setUploading] = useState(false);
+  const [uploading, setUploading] = useState("");
   const { data: talents = [] } = useQuery({
     queryKey: ["talents"],
     queryFn: () => fetchTalents(),
   });
+  const {} = useQuery({
+    queryKey: ["posts", id],
+    queryFn: () => getPost(id),
+    onSuccess: (data) => {
+      setName(data.name);
+      setDesc(data.description);
+      setCategory(data.category);
+      setImage(data.image);
+      setTalent(data.talent);
+    },
+  });
 
-  const isAdmin = useMemo(() => {
-    return cookies &&
-      cookies.currentUser &&
-      cookies.currentUser.role === "admin"
-      ? true
-      : false;
-  }, [cookies]);
-
-  const createMutation = useMutation({
-    mutationFn: addVideos,
+  const updateMutation = useMutation({
+    mutationFn: updatePost,
     onSuccess: () => {
       notifications.show({
-        title: "Video Added",
+        title: "Post Edited",
         color: "green",
       });
-      navigate("/videos");
+
+      navigate("/posts");
     },
     onError: (error) => {
       notifications.show({
@@ -58,24 +63,26 @@ function VideosAdd() {
     },
   });
 
-  const handleAddVideos = async (event) => {
+  const handleUpdatePost = async (event) => {
     event.preventDefault();
-    createMutation.mutate({
+    updateMutation.mutate({
+      id: id,
       data: JSON.stringify({
         name: name,
-        link: link,
+        description: desc,
         category: category,
         image: image,
-        talent: talent,
+        talents: talents,
       }),
       token: currentUser ? currentUser.token : "",
     });
   };
 
-  const uploadMutaion = useMutation({
-    mutationFn: addVideoImage,
+  const uploadMutation = useMutation({
+    mutationFn: uploadPostImage,
     onSuccess: (data) => {
       setImage(data.image_url);
+      setUploading(false);
     },
     onError: (error) => {
       notifications.show({
@@ -86,23 +93,22 @@ function VideosAdd() {
   });
 
   const handleImageUpload = (files) => {
-    uploadMutaion.mutate(files[0]);
+    uploadMutation.mutate(files[0]);
     setUploading(true);
   };
-
   return (
     <Container>
       <Space h="50px" />
       <Title order={2} align="center">
-        Add New Video
+        Edit Posts
       </Title>
       <Space h="50px" />
       <Card withBorder shadow="md" p="20px">
         <TextInput
           value={name}
-          placeholder="Enter the video name here"
+          placeholder="Enter the post name here"
           label="Name"
-          description="The name of the video"
+          description="The name of the post"
           withAsterisk
           onChange={(event) => setName(event.target.value)}
         />
@@ -112,7 +118,7 @@ function VideosAdd() {
         {image && image !== "" ? (
           <>
             <Image src={"http://localhost:5000/" + image} width="100%" />
-            <Button color="dark" mt="15px" onClick={() => setImage("")}>
+            <Button color="dark" mt="15 px" onClick={() => setImage("")}>
               Remove Image
             </Button>
           </>
@@ -133,12 +139,12 @@ function VideosAdd() {
         <Divider />
         <Space h="20px" />
         <TextInput
-          value={link}
-          placeholder="Enter the video link here"
-          label="Link"
-          description="The link of the video"
+          value={desc}
+          placeholder="Enter the video description here"
+          label="Description"
+          description="The description of the video"
           withAsterisk
-          onChange={(event) => setLink(event.target.value)}
+          onChange={(event) => setDesc(event.target.value)}
         />
         <Space h="20px" />
         <Divider />
@@ -147,10 +153,12 @@ function VideosAdd() {
           value={category}
           placeholder="Enter the category here"
           label="Category"
-          description="The category of the video"
+          description="The category of the post"
           withAsterisk
           onChange={(event) => setCategory(event.target.value)}
         />
+        <Space h="20px" />
+        <Divider />
         <Space h="20px" />
         <select
           value={talent}
@@ -168,26 +176,26 @@ function VideosAdd() {
           })}
         </select>
         <Space h="20px" />
-        {isAdmin ? (
-          <Button fullWidth onClick={handleAddVideos}>
-            Add New Video
-          </Button>
-        ) : null}
+
+        <Button fullWidth onClick={handleUpdatePost}>
+          Update
+        </Button>
       </Card>
       <Space h="20px" />
       <Group position="center">
         <Button
           component={Link}
-          to="/videos"
+          to="/posts"
           variant="subtle"
           size="xs"
           color="gray"
         >
-          Go back to Videos
+          Go back to News
         </Button>
       </Group>
       <Space h="100px" />
     </Container>
   );
 }
-export default VideosAdd;
+
+export default PostsEdit;
