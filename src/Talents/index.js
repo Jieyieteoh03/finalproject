@@ -177,7 +177,7 @@ function Talents() {
                       <Space h="20px" />
                       <img
                         onClick={() => navigate("/details/" + talent._id)}
-                        src={"http://localhost:5000/" + talent.image}
+                        src={"http://10.1.104.1:5000/" + talent.image}
                         height="100%"
                         width="100%"
                       />

@@ -110,7 +110,7 @@ export default function Home() {
                       >
                         <a href={video.link} target="_blank">
                           <img
-                            src={"http://localhost:5000/" + video.image}
+                            src={"http://10.1.104.1:5000/" + video.image}
                             width="100%"
                           />
                         </a>
@@ -164,6 +164,7 @@ export default function Home() {
             slideGap="sm"
             align="start"
             style={{ marginLeft: "20px" }}
+            loop
           >
             {posts
               ? posts.map((post) => {
@@ -176,7 +177,7 @@ export default function Home() {
                         style={{ backgroundColor: "rgba(255, 255, 255, 0.6)" }}
                       >
                         <img
-                          src={"http://localhost:5000/" + post.image}
+                          src={"http://10.1.104.1:5000/" + post.image}
                           width="100%"
                           onClick={() => {
                             navigate("/posts_2/" + post._id);
@@ -245,7 +246,7 @@ export default function Home() {
                         style={{ backgroundColor: "rgba(255, 255, 255, 0)" }}
                       >
                         <img
-                          src={"http://localhost:5000/" + talent.image}
+                          src={"http://10.1.104.1:5000/" + talent.image}
                           width="100%"
                           onClick={() => navigate("/details/" + talent._id)}
                         />

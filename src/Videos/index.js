@@ -180,7 +180,7 @@ function Videos() {
 
                       <a href={video.link} target="_blank">
                         <img
-                          src={"http://localhost:5000/" + video.image}
+                          src={"http://10.1.104.1:5000/" + video.image}
                           height={140}
                         />
                       </a>

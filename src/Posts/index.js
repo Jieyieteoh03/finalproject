@@ -169,7 +169,7 @@ function Posts() {
                     <Space h="20px" />
                     <Group position="apart">
                       <img
-                        src={"http://localhost:5000/" + post.image}
+                        src={"http://10.1.104.1:5000/" + post.image}
                         width={200}
                         onClick={() => navigate("/posts_2/" + post._id)}
                       />

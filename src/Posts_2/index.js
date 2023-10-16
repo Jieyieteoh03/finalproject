@@ -102,7 +102,7 @@ function Posts_2() {
     <>
       <Container p="auto">
         <Space h="20px" />
-        <img src={"http://localhost:5000/" + image} width="800px" />
+        <img src={"http://10.1.104.1:5000/" + image} width="800px" />
         <Space h="20px" />
         <Title order={5}>{name}</Title>
         <Space h="20px" />

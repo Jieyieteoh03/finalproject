@@ -66,7 +66,7 @@ function TalentDetails() {
     <>
       <Space h="20px" />
       <Group position="center">
-        <img src={"http://localhost:5000/" + image} height="500px" />
+        <img src={"http://10.1.104.1:5000/" + image} height="500px" />
       </Group>
       <Space h="20px" />
       <Title style={{ fontSize: "30px" }} align="center">
