@@ -197,7 +197,7 @@ function TalentDetails() {
                       <Card h="100%" w="100%">
                         <a href={video.link} target="_blank">
                           <img
-                            src={"http://localhost:5000/" + video.image}
+                            src={"http://10.1.104.1:5000/" + video.image}
                             width="100%"
                           />
                         </a>
@@ -250,7 +250,7 @@ function TalentDetails() {
                     <Carousel.Slide>
                       <Card h="100%" w="100%">
                         <img
-                          src={"http://localhost:5000/" + post.image}
+                          src={"http://10.1.104.1:5000/" + post.image}
                           width="100%"
                           onClick={() => {
                             navigate("/posts_2/" + post._id);
