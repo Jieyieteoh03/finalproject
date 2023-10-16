@@ -1,8 +1,14 @@
 import axios from "axios";
 import { API_URL } from "./data";
 
-export const fetchVideos = async () => {
-  const response = await axios.get(API_URL + "/videos");
+export const fetchVideos = async (token = "") => {
+  const response = await axios({
+    method: "GET",
+    url: API_URL + "/videos",
+    headers: {
+      Authorization: "Bearer " + token,
+    },
+  });
   return response.data;
 };
 

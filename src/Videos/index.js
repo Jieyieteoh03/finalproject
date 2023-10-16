@@ -8,6 +8,7 @@ import {
   Button,
   Container,
   Menu,
+  Pagination,
 } from "@mantine/core";
 import { Link } from "react-router-dom";
 import { useState, useMemo, useEffect } from "react";
@@ -18,6 +19,7 @@ import { useCookies } from "react-cookie";
 import Header from "../Header";
 import { LuSettings2 } from "react-icons/lu";
 import { BsPencilSquare, BsTrash } from "react-icons/bs";
+import Footer from "../Footer";
 
 function Videos() {
   const [cookies] = useCookies(["currentUser"]);
@@ -49,11 +51,8 @@ function Videos() {
     }
 
     const total = Math.ceil(newList.length / perPage);
-    const pages = [];
-    for (let i = 1; i <= total; i++) {
-      pages.push(i);
-    }
-    setTotalPages(pages);
+
+    setTotalPages(total);
 
     const start = (currentPage - 1) * perPage;
     const end = start + perPage;
@@ -81,7 +80,7 @@ function Videos() {
     mutationFn: deleteVideo,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["videos", category],
+        queryKey: ["videos"],
       });
       notifications.show({
         title: "Video deleted",
@@ -92,11 +91,12 @@ function Videos() {
 
   return (
     <>
+      <Header page="videos" />
       <Container>
-        <Title order={1} align="center">
-          Hololive Videos
+        <Space h="20px" />
+        <Title style={{ fontSize: "50px", color: "#063f5c" }} align="center">
+          VIDEOS
         </Title>
-        <Header />
         <Space h="20px" />
         <Group position="right">
           {isAdmin && (
@@ -108,21 +108,28 @@ function Videos() {
         <Space h="20px" />
         <Group>
           <Button
+            size="md"
             onClick={() => {
               setCategory("");
             }}
           >
+            <Space w="50px" />
             All
+            <Space w="50px" />
           </Button>
           {categoryOptions.map((category) => {
             return (
               <Button
+                size="md"
                 key={category}
                 onClick={() => {
                   setCategory(category);
                 }}
               >
+                <Space w="50px" />
+
                 {category}
+                <Space w="50px" />
               </Button>
             );
           })}
@@ -133,13 +140,13 @@ function Videos() {
             ? currentVideos.map((video) => {
                 return (
                   <Grid.Col key={video._id} lg={4} sm={6} xs={12}>
-                    <Card withBorder shadow="sm" p="20px">
+                    <Card p="10px">
                       {isAdmin && (
                         <>
                           <Menu shadow="md" width={200} position="bottom-end">
                             <Menu.Target>
                               <Group position="right">
-                                <Button>
+                                <Button variant="outline">
                                   <LuSettings2 />
                                 </Button>
                               </Group>
@@ -170,17 +177,21 @@ function Videos() {
                         </>
                       )}
                       <Space h="20px" />
+
                       <a href={video.link} target="_blank">
                         <img
                           src={"http://localhost:5000/" + video.image}
-                          height="100vh"
+                          height={140}
                         />
                       </a>
+
                       <Space h="20px" />
                       <Title order={5}>{video.name}</Title>
                       <Space h="20px" />
                       <Group position="apart">
-                        <Badge color="yellow">{video.category}</Badge>
+                        <Badge style={{ color: "#063f5c" }} variant="outline">
+                          {video.category}
+                        </Badge>
                       </Group>
                       <Space h="20px" />
                     </Card>
@@ -190,25 +201,17 @@ function Videos() {
             : null}
         </Grid>
         <Space h="40px" />
-        <div>
-          <span style={{ marginRight: "10px" }}>
-            Page {currentPage} of {totalPages.length}
-          </span>
-          {totalPages.map((page) => {
-            return (
-              <button
-                key={page}
-                onClick={() => {
-                  setCurrentPage(page);
-                }}
-              >
-                {page}
-              </button>
-            );
-          })}
-        </div>
+        <Pagination
+          value={currentPage}
+          onChange={setCurrentPage}
+          total={totalPages}
+          size="xl"
+          radius="xl"
+          position="center"
+        ></Pagination>
         <Space h="40px" />
       </Container>
+      <Footer />
     </>
   );
 }

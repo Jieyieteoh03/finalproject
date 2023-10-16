@@ -8,6 +8,7 @@ import {
   Button,
   Container,
   Menu,
+  Pagination,
 } from "@mantine/core";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useMemo, useEffect } from "react";
@@ -18,6 +19,7 @@ import { useCookies } from "react-cookie";
 import Header from "../Header";
 import { LuSettings2 } from "react-icons/lu";
 import { BsPencilSquare, BsTrash } from "react-icons/bs";
+import Footer from "../Footer";
 
 function Posts() {
   const [cookies] = useCookies(["currentUser"]);
@@ -31,9 +33,8 @@ function Posts() {
   const [totalPages, setTotalPages] = useState([]);
   const { data: posts } = useQuery({
     queryKey: ["posts"],
-    queryFn: () => fetchPosts(),
+    queryFn: () => fetchPosts(currentUser ? currentUser.token : ""),
   });
-  console.log(posts);
   useEffect(() => {
     let newList = posts ? [...posts] : [];
 
@@ -42,11 +43,8 @@ function Posts() {
     }
 
     const total = Math.ceil(newList.length / perPage);
-    const pages = [];
-    for (let i = 1; i <= total; i++) {
-      pages.push(i);
-    }
-    setTotalPages(pages);
+
+    setTotalPages(total);
 
     const start = (currentPage - 1) * perPage;
     const end = start + perPage;
@@ -85,11 +83,12 @@ function Posts() {
 
   return (
     <>
+      <Header page="posts" />
       <Container>
-        <Title order={1} align="center">
-          Hololive News
+        <Space h="20px" />
+        <Title style={{ fontSize: "50px", color: "#063f5c" }} align="center">
+          NEWS
         </Title>
-        <Header />
         <Space h="20px" />
         <Group position="right">
           <Button component={Link} to="/add_posts" color="green">
@@ -99,21 +98,27 @@ function Posts() {
         <Space h="20px" />
         <Group>
           <Button
+            size="md"
             onClick={() => {
               setCategory("");
             }}
           >
+            <Space w="50px" />
             All
+            <Space w="50px" />
           </Button>
           {categoryOptions.map((category) => {
             return (
               <Button
+                size="md"
                 key={category}
                 onClick={() => {
                   setCategory(category);
                 }}
               >
+                <Space w="50px" />
                 {category}
+                <Space w="50px" />
               </Button>
             );
           })}
@@ -125,50 +130,51 @@ function Posts() {
               return (
                 <>
                   <Card withBorder shadow="sm" p="20px">
-                    <Menu shadow="md" width={200} position="bottom-end">
-                      <Menu.Target>
-                        <Group position="right">
-                          <Button>
-                            <LuSettings2 />
-                          </Button>
-                        </Group>
-                      </Menu.Target>
+                    {cookies &&
+                    cookies.currentUser &&
+                    post.user &&
+                    cookies.currentUser._id === post.user._id ? (
+                      <Menu shadow="md" width={200} position="bottom-end">
+                        <Menu.Target>
+                          <Group position="right">
+                            <Button variant="outline">
+                              <LuSettings2 />
+                            </Button>
+                          </Group>
+                        </Menu.Target>
 
-                      <Menu.Dropdown>
-                        <Menu.Item
-                          component={Link}
-                          to={"/edit_posts/" + post._id}
-                          icon={<BsPencilSquare />}
-                        >
-                          Edit
-                        </Menu.Item>
-                        <Menu.Item
-                          color="red"
-                          onClick={() => {
-                            deleteMutation.mutate({
-                              id: post._id,
-                              token: currentUser ? currentUser.token : "",
-                            });
-                          }}
-                          icon={<BsTrash />}
-                        >
-                          Delete
-                        </Menu.Item>
-                      </Menu.Dropdown>
-                    </Menu>
+                        <Menu.Dropdown>
+                          <Menu.Item
+                            component={Link}
+                            to={"/edit_posts/" + post._id}
+                            icon={<BsPencilSquare />}
+                          >
+                            Edit
+                          </Menu.Item>
+                          <Menu.Item
+                            color="red"
+                            onClick={() => {
+                              deleteMutation.mutate({
+                                id: post._id,
+                                token: currentUser ? currentUser.token : "",
+                              });
+                            }}
+                            icon={<BsTrash />}
+                          >
+                            Delete
+                          </Menu.Item>
+                        </Menu.Dropdown>
+                      </Menu>
+                    ) : null}
                     <Space h="20px" />
                     <Group position="apart">
                       <img
                         src={"http://localhost:5000/" + post.image}
-                        height="90px"
+                        width={200}
                         onClick={() => navigate("/posts_2/" + post._id)}
                       />
                       <Space h="20px" />
                       <Title order={5}>{post.name}</Title>
-                      <Badge color="yellow">{post.category}</Badge>
-                      <Badge color="yellow">
-                        {post.talent ? post.talent.name : null}
-                      </Badge>
                       <Space h="20px" />
                     </Group>
                   </Card>
@@ -179,25 +185,17 @@ function Posts() {
           : null}
 
         <Space h="40px" />
-        <div>
-          <span style={{ marginRight: "10px" }}>
-            Page {currentPage} of {totalPages.length}
-          </span>
-          {totalPages.map((page) => {
-            return (
-              <button
-                key={page}
-                onClick={() => {
-                  setCurrentPage(page);
-                }}
-              >
-                {page}
-              </button>
-            );
-          })}
-        </div>
+        <Pagination
+          value={currentPage}
+          onChange={setCurrentPage}
+          total={totalPages}
+          size="xl"
+          radius="xl"
+          position="center"
+        ></Pagination>
         <Space h="40px" />
       </Container>
+      <Footer />
     </>
   );
 }

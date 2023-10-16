@@ -9,6 +9,7 @@ import {
   Container,
   Text,
   TextInput,
+  Avatar,
 } from "@mantine/core";
 import { Link, useParams } from "react-router-dom";
 import { useState, useMemo, useEffect } from "react";
@@ -17,8 +18,9 @@ import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { fetchComments, addComments, deleteComment } from "../api/comments";
 import { getPost } from "../api/posts";
 import { useCookies } from "react-cookie";
-import Header from "../Header";
-import { BsPencilSquare, BsTrash } from "react-icons/bs";
+import { BsTrash } from "react-icons/bs";
+import { BiSolidLeftArrow } from "react-icons/bi";
+import Footer from "../Footer";
 
 function Posts_2() {
   const [cookies] = useCookies(["currentUser"]);
@@ -80,6 +82,7 @@ function Posts_2() {
       }),
       token: currentUser ? currentUser.token : "",
     });
+    setInputComment("");
   };
 
   const deleteMutation = useMutation({
@@ -98,21 +101,18 @@ function Posts_2() {
   return (
     <>
       <Container p="auto">
-        <Grid>
-          <Grid.Col key={id} lg={4} sm={6} xs={12}>
-            <Space h="20px" />
-            <img src={"http://localhost:5000/" + image} width="800px" />
-            <Space h="20px" />
-            <Title order={5}>{name}</Title>
-            <Space h="20px" />
-            <Group position="apart">
-              <Badge color="yellow">{category}</Badge>
-            </Group>
-            <Space h="20px" />
-            <Text>{desc}</Text>
-            <Space h="20px" />
-          </Grid.Col>
-        </Grid>
+        <Space h="20px" />
+        <img src={"http://localhost:5000/" + image} width="800px" />
+        <Space h="20px" />
+        <Title order={5}>{name}</Title>
+        <Space h="20px" />
+        <Group position="apart">
+          <Badge color="yellow">{category}</Badge>
+        </Group>
+        <Space h="20px" />
+        <Text>{desc}</Text>
+        <Space h="20px" />
+
         <Card withBorder shadow="sm" p="20px">
           <Title order={4}>Comments</Title>
           <Space h="20px" />
@@ -123,19 +123,35 @@ function Posts_2() {
                   <>
                     <Card withBorder key={comment._id}>
                       <Group position="apart">
-                        <Text>{comment.user.name}</Text>
-                        <Text>{comment.comments}</Text>
-                        <Button
-                          color="red"
-                          onClick={() => {
-                            deleteMutation.mutate({
-                              id: comment._id,
-                              token: currentUser ? currentUser.token : "",
-                            });
-                          }}
-                        >
-                          <BsTrash />
-                        </Button>
+                        <Grid>
+                          <Group>
+                            <Avatar src={null} radius="xl" />
+                            <Text>{comment.user.name}</Text>
+                          </Group>
+
+                          <Grid.Col>
+                            <Text style={{ fontWeight: "bold" }}>
+                              {comment.comments}
+                            </Text>
+                          </Grid.Col>
+                        </Grid>
+
+                        {cookies &&
+                        cookies.currentUser &&
+                        comment.user &&
+                        cookies.currentUser._id === comment.user._id ? (
+                          <Button
+                            color="red"
+                            onClick={() => {
+                              deleteMutation.mutate({
+                                id: comment._id,
+                                token: currentUser ? currentUser.token : "",
+                              });
+                            }}
+                          >
+                            <BsTrash />
+                          </Button>
+                        ) : null}
                       </Group>
                     </Card>
                     <Space h="20px" />
@@ -155,6 +171,16 @@ function Posts_2() {
         </Card>
         <Space h="40px" />
       </Container>
+      <Space h="100px" />
+      <Group position="center">
+        <Button size="xl" component={Link} to="/posts">
+          {<BiSolidLeftArrow />} <Space w={200} />
+          NEWS
+          <Space w={200} />
+        </Button>
+      </Group>
+      <Space h="100px" />
+      <Footer />
     </>
   );
 }

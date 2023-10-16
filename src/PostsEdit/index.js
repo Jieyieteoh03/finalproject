@@ -34,9 +34,10 @@ function PostsEdit() {
     queryFn: () => fetchTalents(),
   });
   const {} = useQuery({
-    queryKey: ["posts", id],
+    queryKey: ["post", id],
     queryFn: () => getPost(id),
     onSuccess: (data) => {
+      console.log(data);
       setName(data.name);
       setDesc(data.description);
       setCategory(data.category);

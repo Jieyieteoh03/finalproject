@@ -14,7 +14,6 @@ import Posts from "./Posts";
 import Posts_2 from "./Posts_2";
 import PostsAdd from "./PostsAdd";
 import PostsEdit from "./PostsEdit";
-import User from "./User";
 import TalentDetails from "./TalentDetails";
 
 function App() {
@@ -36,7 +35,6 @@ function App() {
         <Route path="/add_posts" element={<PostsAdd />} />
         <Route path="/edit_posts/:id" element={<PostsEdit />} />
         <Route path="/posts_2/:id" element={<Posts_2 />} />
-        <Route path="/user" element={<User />} />
       </Routes>
     </Router>
   );

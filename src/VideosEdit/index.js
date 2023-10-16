@@ -37,6 +37,7 @@ function VideosEdit() {
       setLink(data.link);
       setCategory(data.category);
       setImage(data.image);
+      setTalent(data.talent);
     },
   });
 

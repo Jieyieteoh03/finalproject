@@ -1,8 +1,14 @@
 import axios from "axios";
 import { API_URL } from "./data";
 
-export const fetchTalents = async () => {
-  const response = await axios.get(API_URL + "/talents");
+export const fetchTalents = async (token = "") => {
+  const response = await axios({
+    method: "GET",
+    url: API_URL + "/talents",
+    headers: {
+      Authorization: "Bearer " + token,
+    },
+  });
   return response.data;
 };
 

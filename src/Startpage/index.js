@@ -5,48 +5,63 @@ import {
   Card,
   Group,
   Button,
-  Overlay,
+  BackgroundImage,
+  MediaQuery,
 } from "@mantine/core";
 
 import { Link } from "react-router-dom";
 
 export default function Startpage() {
   return (
-    <div
+    <BackgroundImage
+      src="/images/ina.jpg"
       style={{
         height: "100vh",
-        backgroundImage: "url(/images/5559852.jpg)",
         backgroundSize: "cover",
-        backgroundRepeat: "no-repeat",
+        backgroundAttachment: "fixed",
+        backgroundPosition: "center",
       }}
     >
-      <Container>
-        <Space h="200px" />
-
-        <div style={{ display: "flex" }}>
-          {" "}
-          <Card p="90px">
-            <Card.Section>
-              <Group position="center">
-                {" "}
-                <Image
-                  src="/images/Hololive-Logo_PNG1.png"
-                  height={100}
-                  width={200}
-                />
-                <Space h="100px" />
-                <Button component={Link} to="/login">
-                  Let's go
-                </Button>
-              </Group>
-            </Card.Section>
-          </Card>
-          <Space w="200px" />
-          <div style={{ display: "flex" }}>
-            <Image src="/images/holo1.png" height={500} width={500} />
-          </div>
-        </div>
-      </Container>
-    </div>
+      <Group position="center">
+        <Image src="/images/Hololive_logo.png" height="200px" width="auto" />
+      </Group>
+      <Group position="center">
+        <Space
+          h="500px"
+          sx={{
+            "@media (max-width: 768px)": {
+              display: "none",
+            },
+          }}
+        />
+        <Space
+          h="10px"
+          sx={{
+            "@media (min-width: 768px)": {
+              display: "none",
+            },
+          }}
+        />
+        <Card
+          p="90px"
+          style={{ backgroundColor: "rgba(255, 255, 255, 0.7)" }}
+          shadow="md"
+          radius="lg"
+        >
+          <Card.Section>
+            <Group>
+              <Image
+                src="/images/Hololive-Logo_PNG1.png"
+                height={100}
+                width={200}
+              />
+              <Button size="xl" component={Link} to="/login">
+                LET'S GO
+              </Button>
+            </Group>
+          </Card.Section>
+        </Card>
+      </Group>
+    </BackgroundImage>
   );
 }

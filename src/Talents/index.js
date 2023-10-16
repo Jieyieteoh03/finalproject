@@ -8,9 +8,10 @@ import {
   Button,
   Container,
   Menu,
+  Pagination,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState, useMemo, useEffect } from "react";
 import { notifications } from "@mantine/notifications";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
@@ -19,8 +20,10 @@ import { useCookies } from "react-cookie";
 import Header from "../Header";
 import { LuSettings2 } from "react-icons/lu";
 import { BsPencilSquare, BsTrash } from "react-icons/bs";
+import Footer from "../Footer";
 
 function Talents() {
+  const navigate = useNavigate();
   const [cookies] = useCookies(["currentUser"]);
   const { currentUser } = cookies;
   const queryClient = useQueryClient();
@@ -32,8 +35,8 @@ function Talents() {
   const [perPage, setPerPage] = useState(6);
   const [totalPages, setTotalPages] = useState([]);
   const { data: talents } = useQuery({
-    queryKey: ["talents", category],
-    queryFn: () => fetchTalents(category),
+    queryKey: ["talents"],
+    queryFn: () => fetchTalents(),
   });
 
   const isAdmin = useMemo(() => {
@@ -52,11 +55,8 @@ function Talents() {
     }
 
     const total = Math.ceil(newList.length / perPage);
-    const pages = [];
-    for (let i = 1; i <= total; i++) {
-      pages.push(i);
-    }
-    setTotalPages(pages);
+
+    setTotalPages(total);
 
     const start = (currentPage - 1) * perPage;
     const end = start + perPage;
@@ -66,7 +66,7 @@ function Talents() {
     setCurrentTalents(newList);
   }, [talents, category, perPage, currentPage]);
 
-  const memoryTalents = queryClient.getQueryData(["talents", ""]);
+  const memoryTalents = queryClient.getQueryData(["talents"]);
   const categoryOptions = useMemo(() => {
     let options = [];
 
@@ -84,7 +84,7 @@ function Talents() {
     mutationFn: deleteTalent,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["talents", category],
+        queryKey: ["talents"],
       });
       notifications.show({
         title: "Talent deleted",
@@ -95,11 +95,12 @@ function Talents() {
 
   return (
     <>
+      <Header page="talents" />
       <Container>
-        <Title order={1} align="center">
-          Hololive Talents
+        <Space h="20px" />
+        <Title style={{ fontSize: "50px", color: "#063f5c" }} align="center">
+          TALENTS
         </Title>
-        <Header />
         <Space h="20px" />
         {isAdmin && (
           <Group position="right">
@@ -135,15 +136,15 @@ function Talents() {
           {currentTalents
             ? currentTalents.map((talent) => {
                 return (
-                  <Grid.Col key={talent._id} lg={4} sm={6} xs={12}>
-                    <Card withBorder shadow="sm" p="20px">
+                  <Grid.Col key={talent._id} lg={3} md={4} sm={6} xs={6}>
+                    <Card>
                       <Title order={5}>{talent.title}</Title>
                       {isAdmin && (
                         <>
                           <Menu shadow="md" width={200} position="bottom-end">
                             <Menu.Target>
                               <Group position="right">
-                                <Button>
+                                <Button variant="outline">
                                   <LuSettings2 />
                                 </Button>
                               </Group>
@@ -175,23 +176,14 @@ function Talents() {
                       )}
                       <Space h="20px" />
                       <img
+                        onClick={() => navigate("/details/" + talent._id)}
                         src={"http://localhost:5000/" + talent.image}
-                        height="100vh"
+                        height="100%"
+                        width="100%"
                       />
                       <Space h="20px" />
                       <Title order={4}>{talent.name}</Title>
                       <Space h="20px" />
-                      <Badge color="yellow">{talent.category}</Badge>
-                      <Space h="20px" />
-                      <Button
-                        component={Link}
-                        to={"/details/" + talent._id}
-                        color="red"
-                        size="xs"
-                        radius="50px"
-                      >
-                        View details
-                      </Button>
                     </Card>
                   </Grid.Col>
                 );
@@ -199,56 +191,19 @@ function Talents() {
             : null}
         </Grid>
         <Space h="40px" />
-        <div>
-          <span style={{ marginRight: "10px" }}>
-            Page {currentPage} of {totalPages.length}
-          </span>
-          {totalPages.map((page) => {
-            return (
-              <button
-                key={page}
-                onClick={() => {
-                  setCurrentPage(page);
-                }}
-              >
-                {page}
-              </button>
-            );
-          })}
-        </div>
+        <Pagination
+          value={currentPage}
+          onChange={setCurrentPage}
+          total={totalPages}
+          size="xl"
+          radius="xl"
+          position="center"
+        ></Pagination>
         <Space h="40px" />
       </Container>
+      <Footer />
     </>
   );
 }
 
 export default Talents;
-
-{
-  /* <Button
-                                      component={Link}
-                                      to={"/edit_talents/" + talent._id}
-                                      color="blue"
-                                      size="xs"
-                                      radius="50px"
-                                    >
-                                      Edit
-                                    </Button>
-                                  </Grid.Col>
-                                  <Grid.Col>
-                                    <Button
-                                      color="red"
-                                      size="xs"
-                                      radius="50px"
-                                      onClick={() => {
-                                        deleteMutation.mutate({
-                                          id: talent._id,
-                                          token: currentUser
-                                            ? currentUser.token
-                                            : "",
-                                        });
-                                      }}
-                                    >
-                                      Delete
-                                    </Button> */
-}

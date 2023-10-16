@@ -19,7 +19,10 @@ export default function Header({ title, page = "" }) {
       <Space h="50px" />
       <Title align="center">{title}</Title>
       <Space h="20px" />
-      <Group position="apart">
+      <Group
+        position="apart"
+        style={{ marginLeft: "20px", marginRight: "20px" }}
+      >
         <Group>
           <Button
             component={Link}
@@ -31,36 +34,30 @@ export default function Header({ title, page = "" }) {
           <Button
             component={Link}
             to="/talents"
-            variant={page === "cart" ? "filled" : "light"}
+            variant={page === "talents" ? "filled" : "light"}
           >
             Talents
           </Button>
           <Button
             component={Link}
             to="/posts"
-            variant={page === "orders" ? "filled" : "light"}
+            variant={page === "posts" ? "filled" : "light"}
           >
             News
           </Button>
           <Button
             component={Link}
             to="/videos"
-            variant={page === "orders" ? "filled" : "light"}
+            variant={page === "videos" ? "filled" : "light"}
           >
             Videos
           </Button>
         </Group>
-        <Group position="right">
+        <Group>
           {cookies && cookies.currentUser ? (
             <>
               <Group>
-                <Avatar
-                  src="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=255&q=80"
-                  radius="xl"
-                  onClick={() => {
-                    navigate("/user");
-                  }}
-                />
+                <Avatar src={null} radius="xl" />
                 <div style={{ flex: 1 }}>
                   <Text size="sm" fw={500}>
                     {cookies.currentUser.name}
@@ -94,7 +91,7 @@ export default function Header({ title, page = "" }) {
               </Button>
               <Button
                 component={Link}
-                to="/Signup"
+                to="/signup"
                 variant={page === "signup" ? "filled" : "light"}
               >
                 Signup
@@ -103,6 +100,7 @@ export default function Header({ title, page = "" }) {
           )}
         </Group>
       </Group>
+
       <Space h="20px" />
       <Divider />
     </div>
